@@ -29,13 +29,13 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     readJson(this)
+    boletins.reverse()
     initRecyclerView()
   }
 
 
   fun readJson(context: Context){
     var json: String?=null
-    val listaBoletins = mutableListOf<Boletim>()
     try {
       val inputStream: InputStream= context.assets.open("data.json")
       json = inputStream.bufferedReader().use { it.readText() }
@@ -45,7 +45,15 @@ class MainActivity : AppCompatActivity() {
         var js = jsonArray.getJSONObject(i)
         val dia = formatarData(js.getString("boletim").substring(0,10))
         val hora = js.getString("boletim").substring(11,18)
-        val boletim = Boletim(js.getInt("Suspeitos"),js.getInt("Confirmados"),0,0,0,0,0,js.getInt("mortes"),dia,hora)
+        val boletim = Boletim(js.getInt("Suspeitos"),
+          js.getInt("Confirmados"),
+          js.getInt("Descartados"),
+          js.getInt("Monitoramento"),
+          js.getInt("Descartados"),
+          js.getInt("Sdomiciliar"),
+          js.getInt("Shopitalar"),
+          js.getInt("mortes"),dia,hora)
+
         boletins.add(boletim)
       }
     }

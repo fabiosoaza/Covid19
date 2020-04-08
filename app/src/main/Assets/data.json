@@ -106,5 +106,17 @@
     "Chospitalar": 1,
     "mortes": 0,
     "boletim": "2020-04-07T16:45:00.000Z"
-  }
+  },
+    {
+      "Suspeitos": 10,
+      "Confirmados": 10,
+      "Descartados": 34,
+      "Monitoramento": 43,
+      "Curados": 7,
+      "Sdomiciliar": 6,
+      "Shopitalar": 4,
+      "Chospitalar": 1,
+      "mortes": 2,
+      "boletim": "2020-04-08T16:45:00.000Z"
+    }
 ]

@@ -2,6 +2,7 @@ package com.example.covid19
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 data class Boletim(
   var suspeitos: Int=0,
@@ -12,11 +13,11 @@ data class Boletim(
   var sDomiciliar: Int=0,
   var sHospitalar: Int=0,
   var mortes: Int=0,
-  var data: String,
+  var dia: String,
   var hora: String
 ) {
   override fun toString(): String {
-    return data
+    return dia.toString()
   }
 
 
