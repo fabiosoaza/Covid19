@@ -3,7 +3,7 @@ package com.example.covid19
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class Boletim(
+data class Boletim(
   var suspeitos: Int=0,
   var confirmados: Int=0,
   var descartados: Int=0,

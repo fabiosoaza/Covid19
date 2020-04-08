@@ -8,4 +8,50 @@
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
+  <style name="dataBoletim">
+    <item name="android:layout_marginStart">16dp</item>
+    <item name="android:layout_marginTop">16dp</item>
+    <item name="android:fontFamily">monospace</item>
+    <item name="android:textAlignment">viewEnd</item>
+    <item name="android:textSize">30sp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+
+  </style>
+
+  <style name="horaBoletim">
+    <item name="android:layout_marginStart">16dp</item>
+    <item name="android:layout_marginTop">16dp</item>
+    <item name="android:fontFamily">monospace</item>
+    <item name="android:textAlignment">viewEnd</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+
+  </style>
+  <style name="txtBoletim">
+    <item name="android:layout_marginStart">16dp</item>
+    <item name="android:textSize">18sp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+
+  </style>
+
+  <style name="txtNumeros" parent="txtBoletim">
+    <item name="android:layout_marginStart">8dp</item>
+    <item name="android:layout_marginTop">8dp</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+    <item name="android:textSize">36sp</item>
+  </style>
+
+  <style name="BoxRed" parent="txtBoletim">
+    <item name="android:layout_marginTop">8dp</item>
+    <item name="android:background">@color/box</item>
+    <item name="android:lineSpacingExtra">30sp</item>
+    <item name="android:padding">16dp</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+    <item name="android:textSize">36sp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
 </resources>

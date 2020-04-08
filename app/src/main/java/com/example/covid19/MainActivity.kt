@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.GridLayout
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -19,14 +22,14 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-  var lista = arrayListOf<String>()
+  private var boletins = mutableListOf<Boletim>()
+  private var adapter = BoletimAdapter(boletins)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     readJson(this)
-
-    var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,lista)
-    lista_view.adapter= adapter
+    initRecyclerView()
   }
 
 
@@ -41,14 +44,26 @@ class MainActivity : AppCompatActivity() {
       for (i in 0 .. jsonArray.length()-1){
         var js = jsonArray.getJSONObject(i)
         val dia = formatarData(js.getString("boletim").substring(0,10))
-        lista.add(dia)
+        val hora = js.getString("boletim").substring(11,18)
+        val boletim = Boletim(js.getInt("Suspeitos"),js.getInt("Confirmados"),0,0,0,0,0,js.getInt("mortes"),dia,hora)
+        boletins.add(boletim)
       }
     }
     catch (e : IOException){
     Log.e("Erro", "Impossivel ler JSON")
     }
 
+
   }
+
+  private fun initRecyclerView(){
+
+    rvDados.adapter=adapter
+   // val layoutManager = GridLayoutManager(this,1)
+    val layoutManager = LinearLayoutManager(this)
+    rvDados.layoutManager=layoutManager
+  }
+
   fun formatarData(data: String): String {
     val diaString =data
     var formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
