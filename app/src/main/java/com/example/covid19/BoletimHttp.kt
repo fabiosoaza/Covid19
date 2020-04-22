@@ -3,6 +3,8 @@ package com.example.covid19
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -14,9 +16,11 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 object BoletimHttp {
   val Json_URL="https://raw.githubusercontent.com/ramonsl/ws-covid/master/db.json"
+  /*
   private fun connect(urlAdrress: String): HttpURLConnection{
     val second =1000
     val url= URL(urlAdrress)
@@ -30,6 +34,8 @@ object BoletimHttp {
     connection.connect()
     return connection
   }
+
+   */
   fun hasConnection(ctx: Context): Boolean{
     val cm= ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val info = cm.activeNetworkInfo
@@ -68,9 +74,25 @@ object BoletimHttp {
     var date = LocalDate.parse(diaString)
     var formattedDate = date.format(formatter)
     return formattedDate
+
+  }
+  fun loadBoletim(): List<Boletim>?{
+    val client = OkHttpClient.Builder()
+      .readTimeout(5,TimeUnit.SECONDS)
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .build()
+    val request = Request.Builder()
+      .url(Json_URL)
+      .build()
+    val response = client.newCall(request).execute()
+    val jsonString = response.body?.string()
+    val json = JSONArray(jsonString)
+
+    return readBoletins(json)
+
   }
 
-
+/*
   fun loadBoletim(): List<Boletim>?{
     try {
       val connection = connect(Json_URL)
@@ -98,4 +120,6 @@ object BoletimHttp {
     }
     return String(bigBuffer.toByteArray(), Charset.forName("UTF-8"))
   }
+  */
+
 }

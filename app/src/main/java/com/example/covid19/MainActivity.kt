@@ -3,6 +3,7 @@ package com.example.covid19
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
 
   fun carregaDados(){
+    boletinsList.clear()
     if (boletinsList.isNotEmpty()){
       showProgress(false)
     }else{
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     R.id.menu_refresh -> {
 
       carregaDados()
+      Log.e("ERRO", "CARREGA")
       // Toast.makeText(this,"Print action",Toast.LENGTH_LONG).show()
       true
     }
