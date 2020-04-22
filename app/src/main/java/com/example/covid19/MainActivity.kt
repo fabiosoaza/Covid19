@@ -1,83 +1,120 @@
 package com.example.covid19
 
-import android.content.Context
-import android.os.Build
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.GridLayout
-import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.GridLayoutManager
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.IOException
-import java.io.InputStream
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
+import android.view.MenuInflater as MenuInflater
+
 
 class MainActivity : AppCompatActivity() {
 
-  private var boletins = mutableListOf<Boletim>()
-  private var adapter = BoletimAdapter(boletins)
+  private  var  asyncTask : BoletimTask? =null
+  private var boletinsList = mutableListOf<Boletim>()
+  private var adapter = BoletimAdapter(boletinsList)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    readJson(this)
-    boletins.reverse()
+    setSupportActionBar(findViewById(R.id.my_tool))
+    carregaDados()
     initRecyclerView()
   }
 
 
-  fun readJson(context: Context){
-    var json: String?=null
-    try {
-      val inputStream: InputStream= context.assets.open("data.json")
-      json = inputStream.bufferedReader().use { it.readText() }
-     // txtValue.text=json.toString()
-      var jsonArray =JSONArray(json)
-      for (i in 0 .. jsonArray.length()-1){
-        var js = jsonArray.getJSONObject(i)
-        val dia = formatarData(js.getString("boletim").substring(0,10))
-        val hora = js.getString("boletim").substring(11,18)
-        val boletim = Boletim(js.getInt("Suspeitos"),
-          js.getInt("Confirmados"),
-          js.getInt("Descartados"),
-          js.getInt("Monitoramento"),
-          js.getInt("Descartados"),
-          js.getInt("Sdomiciliar"),
-          js.getInt("Shopitalar"),
-          js.getInt("mortes"),dia,hora)
-
-        boletins.add(boletim)
+  fun carregaDados(){
+    if (boletinsList.isNotEmpty()){
+      showProgress(false)
+    }else{
+      if(asyncTask==null){
+        if (BoletimHttp.hasConnection(this)){
+          starDonwload()
+        }else{
+          progressBar.visibility =View.GONE
+          txtMsg.text = "Erro"
+        }
+      }else if(asyncTask?.status == AsyncTask.Status.RUNNING){
+        showProgress(true)
       }
     }
-    catch (e : IOException){
-    Log.e("Erro", "Impossivel ler JSON")
+  }
+  override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    R.id.menu_refresh -> {
+
+      carregaDados()
+      // Toast.makeText(this,"Print action",Toast.LENGTH_LONG).show()
+      true
     }
 
 
+    else -> {
+
+      super.onOptionsItemSelected(item)
+    }
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    menuInflater.inflate(R.menu.menu,menu)
+    return super.onCreateOptionsMenu(menu)
   }
 
   private fun initRecyclerView(){
-
     rvDados.adapter=adapter
-   // val layoutManager = GridLayoutManager(this,1)
+    // val layoutManager = GridLayoutManager(this,1)
     val layoutManager = LinearLayoutManager(this)
     rvDados.layoutManager=layoutManager
   }
 
-  fun formatarData(data: String): String {
-    val diaString =data
-    var formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    var date = LocalDate.parse(diaString)
-    var formattedDate = date.format(formatter)
-    return formattedDate
+
+  private fun starDonwload(){
+    if (asyncTask?.status!=AsyncTask.Status.RUNNING){
+      asyncTask =BoletimTask()
+      asyncTask?.execute()
+    }
+  }
+  private fun updateBoletns(result: List<Boletim>?){
+    if (result!=null){
+      boletinsList.clear()
+      boletinsList.addAll(result.reversed())
+    }else{
+      txtMsg.text = "Erro ao Carregar"
+    }
+    adapter.notifyDataSetChanged()
+    asyncTask=null
+  }
+
+  fun showProgress(show: Boolean){
+    if(show){
+      txtMsg.text= "Carregando...."
+    }
+    txtMsg.visibility =if (show) View.VISIBLE else View.GONE
+    progressBar.visibility =if (show) View.VISIBLE else View.GONE
+  }
+
+  inner class BoletimTask: AsyncTask<Void, Void, List<Boletim>?>() {
+    override fun onPreExecute() {
+      super.onPreExecute()
+      showProgress(true)
+
+    }
+
+    override fun doInBackground(vararg p0: Void?): List<Boletim>? {
+      return BoletimHttp.loadBoletim()
+
+    }
+
+    override fun onPostExecute(bo: List<Boletim>?) {
+      super.onPostExecute(bo)
+      showProgress(false)
+      updateBoletns(bo)
+
+    }
+
   }
 
 }
